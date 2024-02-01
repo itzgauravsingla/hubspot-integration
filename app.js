@@ -67,6 +67,10 @@ app.get('/cards', (req,res) => {
     }
   }
   res.send(cardRes);
+});
+
+app.get('/template-list', (req, res) => {
+  res.sendFile('views/templates.html', {root: __dirname})
 })
 
 app.listen(PORT, (error) => {
