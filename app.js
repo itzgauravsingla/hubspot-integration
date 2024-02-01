@@ -28,6 +28,7 @@ app.get('/auth', (req, res) => {
 });
 
 app.get('/templates', (req, res) => {
+  console.log(req.query.code);
   const templatesResponse = {
     actionType: "DROPDOWN_FETCH",
     message: null,
@@ -50,6 +51,7 @@ app.get('/templates', (req, res) => {
 })
 
 app.get('/cards', (req,res) => {
+  console.log(req.query.code);
   const cardRes = {
     results: [
       // {
@@ -70,6 +72,7 @@ app.get('/cards', (req,res) => {
 });
 
 app.get('/template-list', (req, res) => {
+  console.log(req.query.code);
   res.sendFile('views/templates.html', {root: __dirname})
 })
 
