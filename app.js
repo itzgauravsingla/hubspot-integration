@@ -52,11 +52,11 @@ app.get('/templates', (req, res) => {
 app.get('/cards', (req,res) => {
   const cardRes = {
     results: [
-      {
-        objectId: 245,
-        title: "Create an ePak",
-        // link: "http://esign-ui.msbdocs.com"
-      }
+      // {
+      //   objectId: 245,
+      //   title: "Create an ePak",
+      //   // link: "http://esign-ui.msbdocs.com"
+      // }
     ],
     primaryAction: {
       type: "IFRAME",
