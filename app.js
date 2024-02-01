@@ -28,23 +28,25 @@ app.get('/auth', (req, res) => {
 });
 
 app.get('/templates', (req, res) => {
-  const templates = {
+  const templatesResponse = {
     actionType: "DROPDOWN_FETCH",
     message: null,
-    options: [
-      {
-        text: "Document Template 1",
-        value: "doc-template-id-1"
-      },
-      {
-        text: "Document Template 2",
-        value: "doc-template-id-2"
-      }
-    ],
-    selectedOption: "doc-template-id-2",
-    placeholder: "Choose Template"
+    response: {
+      options: [
+        {
+          text: "Document Template 1",
+          value: "doc-template-id-1"
+        },
+        {
+          text: "Document Template 2",
+          value: "doc-template-id-2"
+        }
+      ],
+      selectedOption: "doc-template-id-2",
+      placeholder: "Choose Template"
+    }
   }
-  res.send(templates);
+  res.send(templatesResponse);
 })
 
 app.listen(PORT, (error) => {
