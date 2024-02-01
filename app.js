@@ -49,6 +49,19 @@ app.get('/templates', (req, res) => {
   res.send(templatesResponse);
 })
 
+app.get('/cards', (req,res) => {
+  const cardRes = {
+    results: [
+      {
+        objectId: 245,
+        title: "Create an ePak",
+        link: "http://esign-ui.msbdocs.com"
+      }
+    ]
+  }
+  res.send(cardRes);
+})
+
 app.listen(PORT, (error) => {
   if(!error) {
     console.log('server running on port: ',PORT);
@@ -56,4 +69,6 @@ app.listen(PORT, (error) => {
     console.log('error occured can\'t start', error);
   }
 })
+
+
 
