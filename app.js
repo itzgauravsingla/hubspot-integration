@@ -14,7 +14,7 @@ let accessToken = null;
 app.use(bodyParser.json());
 
 app.get('/auth', (req, res) => {
-  console.log(req.query.code);
+  console.log(req.query);
     hubspotClient.oauth.tokensApi.create(
       'authorization_code',
       req.query.code,
@@ -28,7 +28,7 @@ app.get('/auth', (req, res) => {
 });
 
 app.get('/templates', (req, res) => {
-  console.log(req.query.code);
+  console.log(req.query);
   const templatesResponse = {
     actionType: "DROPDOWN_FETCH",
     message: null,
@@ -51,7 +51,7 @@ app.get('/templates', (req, res) => {
 })
 
 app.get('/cards', (req,res) => {
-  console.log(req.query.code);
+  console.log(req.query);
   const cardRes = {
     results: [
       // {
@@ -72,7 +72,7 @@ app.get('/cards', (req,res) => {
 });
 
 app.get('/template-list', (req, res) => {
-  console.log(req.query.code);
+  console.log(req.query);
   res.sendFile('views/templates.html', {root: __dirname})
 })
 
