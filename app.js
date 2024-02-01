@@ -62,7 +62,7 @@ app.get('/cards', (req,res) => {
       type: "IFRAME",
       width: 890,
       height: 748,
-      uri: "https://esign-ui.msbdocs.com",
+      uri: "https://giant-earrings-deer.cyclic.app/template-list",
       label: "create ePak"
     }
   }
