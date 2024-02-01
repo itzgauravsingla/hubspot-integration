@@ -55,9 +55,16 @@ app.get('/cards', (req,res) => {
       {
         objectId: 245,
         title: "Create an ePak",
-        link: "http://esign-ui.msbdocs.com"
+        // link: "http://esign-ui.msbdocs.com"
       }
-    ]
+    ],
+    primaryAction: {
+      type: "IFRAME",
+      width: 890,
+      height: 748,
+      uri: "https://esign-ui.msbdocs.com",
+      label: "create ePak"
+    }
   }
   res.send(cardRes);
 })
