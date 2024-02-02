@@ -27,6 +27,25 @@ app.get('/auth', (req, res) => {
 
 });
 
+app.get('/accounts', (req, res) => {
+  const accountsRespose = {
+    actionType: "ACCOUNTS_FETCH",
+    response: {
+        accounts: [
+            {
+                accountId: "shailesh.rai.1260@gmail.com",
+                accountName: "Shailesh Rai",
+                accountLogoUrl: "https://www.hubspot.com/hubfs/assets/hubspot.com/style-guide/brand-guidelines/guidelines_condemned-sprocket-2.svg",
+                appId: 2813065
+            }
+        ]
+    },
+    message: null
+  }
+
+  res.send(accountsRespose);
+})
+
 app.get('/templates', (req, res) => {
   console.log(req.query);
   const templatesResponse = {
