@@ -71,6 +71,7 @@ app.get('/templates', (req, res) => {
 
 app.get('/cards', (req,res) => {
   console.log(req.query);
+  const queries = Object.keys(req.query);
   const cardRes = {
     results: [
       // {
@@ -83,7 +84,7 @@ app.get('/cards', (req,res) => {
       type: "IFRAME",
       width: 890,
       height: 748,
-      uri: "https://grumpy-lapel.cyclic.app/template-list",
+      uri: `https://grumpy-lapel.cyclic.app/template-list?${keys.map(key => encodeURIComponent(key) + '=' + encodeURIComponent(req.query[key]))}`,
       label: "create ePak"
     }
   }
