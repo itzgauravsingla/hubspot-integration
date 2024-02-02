@@ -70,7 +70,7 @@ app.get('/templates', (req, res) => {
 })
 
 app.get('/cards', (req,res) => {
-  console.log(req.query);
+  console.log(req.query, 'cards');
   const cardRes = {
     results: [
       // {
@@ -91,9 +91,9 @@ app.get('/cards', (req,res) => {
 });
 
 app.get('/template-list', (req, res) => {
-  console.log(req.query);
-  const queries = Object.keys(req.query);
-  keys.map(key => console.log(encodeURIComponent(key) + '=' + encodeURIComponent(req.query[key])))
+  console.log(req.query, 'listttt');
+  // const queries = Object.keys(req.query);
+  // keys.map(key => console.log(encodeURIComponent(key) + '=' + encodeURIComponent(req.query[key])))
   res.sendFile('views/templates.html', {root: __dirname})
 })
 
