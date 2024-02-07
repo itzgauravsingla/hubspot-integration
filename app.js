@@ -13,18 +13,23 @@ let hubspotClient = new hubspot.Client({ developerApiKey: API_KEY })
 let accessToken = null;
 app.use(bodyParser.json());
 
-app.get('/auth', (req, res) => {
+app.get('/auth', async(req, res) => {
   console.log(req.query);
-    hubspotClient.oauth.tokensApi.create(
-      'authorization_code',
-      req.query.code,
-      redirectUri,
-      clientId,
-      clientSecret
-  ).then((tokenRes) =>{
-    res.send(tokenRes);
-  })
+  const token = await hubspotClient.oauth.tokensApi.create(
+    'authorization_code',
+    req.query.code,
+    redirectUri,
+    clientId,
+    clientSecret
+  );
+  hubspotClient.setAccessToken(tokenRes);
+  const contacts = await hubspotClient.apiRequest({path: '/crm/v3/objects/contacts',})
+    const result = {
+      token: token,
+      contacts: contacts
 
+    }
+    res.send(result);
 });
 
 app.get('/accounts', (req, res) => {
