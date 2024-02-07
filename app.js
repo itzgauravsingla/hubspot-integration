@@ -22,9 +22,9 @@ app.get('/auth', async(req, res) => {
     clientId,
     clientSecret
   );
-  hubspotClient.setAccessToken(token);
-  const details = await hubspotClient.oauth.accessTokensApi.get(token);
-    res.send(details);
+  hubspotClient.setAccessToken(token.accessToken);
+  const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
+    res.send({...details, ...token});
 });
 
 app.get('/accounts', (req, res) => {
