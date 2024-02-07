@@ -23,13 +23,8 @@ app.get('/auth', async(req, res) => {
     clientSecret
   );
   hubspotClient.setAccessToken(token);
-  const contacts = await hubspotClient.apiRequest({path: '/crm/v3/objects/contacts',})
-    const result = {
-      token: token,
-      contacts: contacts
-
-    }
-    res.send(result);
+  const details = hubspotClient.oauth.accessTokensApi.get(token);
+    res.send(details);
 });
 
 app.get('/accounts', (req, res) => {
