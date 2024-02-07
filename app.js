@@ -123,6 +123,10 @@ app.get('/template-list', (req, res) => {
   res.sendFile('views/templates.html', {root: __dirname})
 })
 
+app.get('/users', (req, res) => {
+  res.send(userDataMap);
+})
+
 app.listen(PORT, (error) => {
   if(!error) {
     console.log('server running on port: ',PORT);
