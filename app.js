@@ -92,6 +92,7 @@ app.get('/cards', (req,res) => {
 
 app.get('/trigger', (req, res) => {
   console.log(req.query, 'trigger');
+  console.log(req.body, 'trigger body');
   res.send();
 })
 
