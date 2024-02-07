@@ -90,6 +90,11 @@ app.get('/cards', (req,res) => {
   res.send(cardRes);
 });
 
+app.get('/trigger', (req, res) => {
+  console.log(req.query, 'trigger');
+  res.send();
+})
+
 app.get('/template-list', (req, res) => {
   console.log(req.query, 'listttt');
   // const queries = Object.keys(req.query);
