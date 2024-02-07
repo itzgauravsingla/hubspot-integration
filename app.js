@@ -10,7 +10,7 @@ const redirectUri = 'https://grumpy-lapel.cyclic.app/auth';
 const scope = 'crm.objects.contacts.read crm.objects.contacts.write crm.schemas.contacts.read crm.schemas.contacts.write';
 const clientSecret ='204f91e4-8f1d-4a03-80b4-2b0df5c20fed';
 let hubspotClient = new hubspot.Client({ developerApiKey: API_KEY })
-let accessToken = null;
+const userDataMap = {};
 app.use(bodyParser.json());
 
 app.get('/auth', async(req, res) => {
@@ -24,7 +24,8 @@ app.get('/auth', async(req, res) => {
   );
   hubspotClient.setAccessToken(token.accessToken);
   const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
-    res.send({...details, ...token});
+  userDataMap[details.userId] = {...details, ...token}
+    res.send(userDataMap[details.userId]);
 });
 
 app.get('/accounts', (req, res) => {
