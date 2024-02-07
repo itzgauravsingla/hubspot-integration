@@ -46,6 +46,25 @@ app.get('/accounts', (req, res) => {
   res.send(accountsRespose);
 })
 
+app.get('/doctemplates', (req,res) => {
+  console.log(req.query, req.body, 'doctemplates');
+  const obj = {
+      options: [
+        {
+          label: "Template-1",
+          description: "Mumbai template",
+          value: "template-1-mumbai"
+        },
+        {
+          label: "Template-2",
+          description: "Dubai template",
+          value: "template-2-dubai"
+        }
+      ],
+  }
+  res.send(obj);
+})
+
 app.get('/templates', (req, res) => {
   console.log(req.query);
   const templatesResponse = {
