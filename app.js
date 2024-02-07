@@ -46,7 +46,7 @@ app.get('/accounts', (req, res) => {
   res.send(accountsRespose);
 })
 
-app.get('/doctemplates', (req,res) => {
+app.post('/doctemplates', (req,res) => {
   console.log(req.query, req.body, 'doctemplates');
   const obj = {
       options: [
