@@ -1,31 +1,52 @@
-const hubspot = require('@hubspot/api-client')
-const express = require('express');
-const bodyParser = require('body-parser');
+import  { Client } from '@hubspot/api-client'
+import express from "express";
+import bodyParser from 'body-parser';
+import { MsbPrivateClient, MsbPublicClient } from './msbclient.js';
 
 const app = express();
 const PORT = 3000;
-const API_KEY = '35c76975-b1ad-44e2-aa25-01e4cf01c0b0';
-const clientId = 'd2568baa-756a-4b25-a288-54c79bde74bc';
-const redirectUri = 'https://grumpy-lapel.cyclic.app/auth';
-const scope = 'crm.objects.contacts.read crm.objects.contacts.write crm.schemas.contacts.read crm.schemas.contacts.write';
-const clientSecret ='204f91e4-8f1d-4a03-80b4-2b0df5c20fed';
-let hubspotClient = new hubspot.Client({ developerApiKey: API_KEY })
+const HUBSPOT = {
+  API_KEY: '35c76975-b1ad-44e2-aa25-01e4cf01c0b0',
+  CLIENT_ID: 'd2568baa-756a-4b25-a288-54c79bde74bc',
+  CLIENT_SECRET: '204f91e4-8f1d-4a03-80b4-2b0df5c20fed',
+  GRANT_TYPE: 'authorization_code'
+}
+
+const MSB = {
+  CLIENT_ID: 'MSB APP',
+  CLIENT_SECRET: 'password',
+  GRANT_TYPE: 'authorization_code'
+}
+
+const baseUri = 'https://grumpy-lapel.cyclic.app';
+const redirectUri = `${baseUri}/auth`;
+const msbAuthUrl = 'https://ui.msbdocs.com/mysignaturebook/app/login';
+
+let hubspotClient = new Client({ developerApiKey: HUBSPOT.API_KEY });
 const userDataMap = {};
 app.use(bodyParser.json());
+
+const msbPublicClient = new MsbPublicClient('https://ui.msbdocs.com');
+const msbPrivateClient = new MsbPrivateClient('https://ui.msbdocs.com','v1');
+console.log(msbPublicClient.baseUrl);
 
 app.get('/auth', async(req, res) => {
   console.log(req.query);
   const token = await hubspotClient.oauth.tokensApi.create(
-    'authorization_code',
+    HUBSPOT.GRANT_TYPE,
     req.query.code,
     redirectUri,
-    clientId,
-    clientSecret
+    HUBSPOT.CLIENT_ID,
+    HUBSPOT.CLIENT_SECRET
   );
   hubspotClient.setAccessToken(token.accessToken);
   const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
-  userDataMap[details.userId] = {...details, ...token}
-    res.send(userDataMap[details.userId]);
+  userDataMap[details.userId]['hubspot'] = {...details, ...token};
+  //redirect to msb
+  const msb = new URL(msbAuthUrl);
+    msb.searchParams.append("redirect_uri",`${baseUri}/hubredirect`);
+    msb.searchParams.append("state", details.userId);
+    res.redirect(msb.href);
 });
 
 app.get('/accounts', (req, res) => {
@@ -126,6 +147,15 @@ app.get('/template-list', (req, res) => {
 app.get('/users', (req, res) => {
   res.send(userDataMap);
 })
+
+app.get('/hubredirect', async(req, res) => {
+  console.log(req.query, req.body);
+  const token = await msbPublicClient.token(MSB.CLIENT_ID,MSB.CLIENT_SECRET,MSB.GRANT_TYPE,req.query.code);
+  msbPrivateClient.setAccessToken(token.data.msb_token);
+  const userDetails = await msbPrivateClient.valid();
+  userDataMap[req.query.state]['msb'] = {...token.data,...userDetails.data.data};
+  res.redirect('https://msbdocs.com')
+});
 
 app.listen(PORT, (error) => {
   if(!error) {
