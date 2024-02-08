@@ -41,6 +41,11 @@ app.get('/auth', async(req, res) => {
   );
   hubspotClient.setAccessToken(token.accessToken);
   const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
+  if (!userDataMap[details.userId]['hubspot']) {
+    userDataMap[details.userId] = {
+      hubspot: {}
+    }
+  }
   userDataMap[details.userId]['hubspot'] = {...details, ...token};
   //redirect to msb
   const msb = new URL(msbAuthUrl);
@@ -153,6 +158,11 @@ app.get('/hubredirect', async(req, res) => {
   const token = await msbPublicClient.token(MSB.CLIENT_ID,MSB.CLIENT_SECRET,MSB.GRANT_TYPE,req.query.code);
   msbPrivateClient.setAccessToken(token.data.msb_token);
   const userDetails = await msbPrivateClient.valid();
+  if (!userDataMap[req.query.state]['msb']) {
+    userDataMap[req.query.state] = {
+      msb: {}
+    }
+  }
   userDataMap[req.query.state]['msb'] = {...token.data,...userDetails.data.data};
   res.redirect('https://msbdocs.com')
 });
