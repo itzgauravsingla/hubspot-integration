@@ -2,6 +2,7 @@ import  { Client } from '@hubspot/api-client'
 import express from "express";
 import bodyParser from 'body-parser';
 import { MsbPrivateClient, MsbPublicClient } from './msbclient.js';
+import { DynamoDB } from './dynamo.js';
 
 const app = express();
 const PORT = 3000;
@@ -30,6 +31,8 @@ const msbPublicClient = new MsbPublicClient('https://ui.msbdocs.com');
 const msbPrivateClient = new MsbPrivateClient('https://ui.msbdocs.com','v1');
 console.log(msbPublicClient.baseUrl);
 
+const dynamoDB = new DynamoDB();
+
 app.get('/auth', async(req, res) => {
   console.log(req.query);
   const token = await hubspotClient.oauth.tokensApi.create(
@@ -41,16 +44,11 @@ app.get('/auth', async(req, res) => {
   );
   hubspotClient.setAccessToken(token.accessToken);
   const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
-  if(!userDataMap[details.userId]) {
-    userDataMap[details.userId] = {}
+  const dynamoUserDetail = await dynamoDB.getUserDetails(details.userId);
+  if(!dynamoUserDetail.Item) {
+    const updated = await dynamoDB.setUserDetails(details.userId);
   }
-  if (!userDataMap[details.userId]['hubspot']) {
-    userDataMap[details.userId] = {
-      ... userDataMap[details.userId],
-      hubspot: {}
-    }
-  }
-  userDataMap[details.userId]['hubspot'] = {...details, ...token};
+  const hubspotUserUpdateResponse = await dynamoDB.setHubspotDetails(details.userId,{...details, ...token});
   //redirect to msb
   const msb = new URL(msbAuthUrl);
     msb.searchParams.append("redirect_uri",`${baseUri}/hubredirect`);
@@ -194,18 +192,24 @@ app.get('/hubredirect', async(req, res) => {
   const token = await msbPublicClient.token(MSB.CLIENT_ID,MSB.CLIENT_SECRET,MSB.GRANT_TYPE,req.query.code);
   msbPrivateClient.setAccessToken(token.data.msb_token);
   const userDetails = await msbPrivateClient.valid();
-  if (!userDataMap[req.query.state]) {
-    userDataMap[req.query.state] = {}
-  }
-  if (!userDataMap[req.query.state]['msb']) {
-    userDataMap[req.query.state] = {
-      ... userDataMap[req.query.state],
-      msb: {}
-    }
-  }
-  userDataMap[req.query.state]['msb'] = {...token.data,...userDetails.data.data};
+  const msbUserUpdateResponse = await dynamoDB.setMsbDetails(req.query.state, {...token.data,...userDetails.data.data});
   res.redirect('https://msbdocs.com')
 });
+
+app.get('/dynamo-get', async(req,res) => {
+  const rowData = await dynamoDB.getUserDetails(123);
+  if(!rowData.Item) {
+    const updated = await dynamoDB.setUserDetails(123);
+    res.send(updated);
+  }
+  res.send(rowData);
+})
+
+app.get('/dynamo-update', async(req,res) => {
+  const rowData = await dynamoDB.setMsbDetails(123,msbData);
+  const hubRowData = await dynamoDB.setHubspotDetails(123, hubData);
+  res.send(rowData);
+})
 
 app.listen(PORT, (error) => {
   if(!error) {
