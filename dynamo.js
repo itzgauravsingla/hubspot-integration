@@ -28,6 +28,7 @@ export class DynamoDB {
   }
 
   setMsbDetails(userId, msb) {
+    console.log(...msb);
     const command = new UpdateCommand({
       TableName: this.TABLE_NAME,
       Key: {
