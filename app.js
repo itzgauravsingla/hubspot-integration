@@ -44,10 +44,10 @@ app.get('/auth', async(req, res) => {
   );
   hubspotClient.setAccessToken(token.accessToken);
   const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
-  const dynamoUserDetail = await dynamoDB.getUserDetails(details.userId);
-  if(!dynamoUserDetail.Item) {
-    const updated = await dynamoDB.setUserDetails(details.userId);
-  }
+  // const dynamoUserDetail = await dynamoDB.getUserDetails(details.userId);
+  const updated = await dynamoDB.setUserDetails(details.userId);
+  // if(!dynamoUserDetail.Item) {
+  // }
   const hubspotUserUpdateResponse = await dynamoDB.setHubspotDetails(details.userId,{...details, ...token});
   //redirect to msb
   const msb = new URL(msbAuthUrl);
@@ -192,6 +192,7 @@ app.get('/hubredirect', async(req, res) => {
   const token = await msbPublicClient.token(MSB.CLIENT_ID,MSB.CLIENT_SECRET,MSB.GRANT_TYPE,req.query.code);
   msbPrivateClient.setAccessToken(token.data.msb_token);
   const userDetails = await msbPrivateClient.valid();
+  console.log(userDetails)
   const msbUserUpdateResponse = await dynamoDB.setMsbDetails(req.query.state, {...token.data,...userDetails.data.data});
   res.redirect('https://msbdocs.com')
 });
@@ -206,8 +207,8 @@ app.get('/dynamo-get', async(req,res) => {
 })
 
 app.get('/dynamo-update', async(req,res) => {
-  const rowData = await dynamoDB.setMsbDetails(123,msbData);
-  const hubRowData = await dynamoDB.setHubspotDetails(123, hubData);
+  const rowData = await dynamoDB.setMsbDetails(63535540,msbData);
+  // const hubRowData = await dynamoDB.setHubspotDetails(123, hubData);
   res.send(rowData);
 })
 

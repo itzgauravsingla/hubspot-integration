@@ -43,7 +43,7 @@ export class DynamoDB {
             refresh_token: msb.refresh_token,
             scope: msb.scope,
             token_type: msb.token_type,
-            defaultTenantUuid:msb.userInfo.defaultTenantUuid,
+            defaultTenantUuid:msb.userInfo?.defaultTenantUuid,
             role: msb.userInfo.role,
             email: msb.userInfo.email,
             firstName: msb.userInfo.firstName,
