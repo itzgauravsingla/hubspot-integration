@@ -192,7 +192,7 @@ app.get('/hubredirect', async(req, res) => {
   const token = await msbPublicClient.token(MSB.CLIENT_ID,MSB.CLIENT_SECRET,MSB.GRANT_TYPE,req.query.code);
   msbPrivateClient.setAccessToken(token.data.msb_token);
   const userDetails = await msbPrivateClient.valid();
-  const msbUserUpdateResponse = await dynamoDB.setMsbDetails(req.query.state, {...token.data,...userDetails.data.data});
+  const msbUserUpdateResponse = await dynamoDB.setMsbDetails(parseInt(req.query.state), {...token.data,...userDetails.data.data});
   res.redirect('https://msbdocs.com')
 });
 

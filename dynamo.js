@@ -28,9 +28,9 @@ export class DynamoDB {
   }
 
   setMsbDetails(userId, msb) {
-    Object.entries(msb).forEach(([key,value]) => {
-      console.log(key,value);
-    })
+    // Object.entries(msb).forEach(([key,value]) => {
+    //   console.log(key,value);
+    // })
     const command = new UpdateCommand({
       TableName: this.TABLE_NAME,
       Key: {
@@ -46,7 +46,7 @@ export class DynamoDB {
             refresh_token: msb.refresh_token,
             scope: msb.scope,
             token_type: msb.token_type,
-            defaultTenantUuid:msb.userInfo?.defaultTenantUuid,
+            defaultTenantUuid: msb.userInfo?.defaultTenantUuid,
             role: msb.userInfo.role,
             email: msb.userInfo.email,
             firstName: msb.userInfo.firstName,
