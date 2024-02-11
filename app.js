@@ -77,7 +77,7 @@ app.get('/accounts', (req, res) => {
 
 app.post('/doctemplates', async(req,res) => {
   console.log(req.query, req.body, 'doctemplates');
-  const dynamoUserDetail = await dynamoDB.getUserDetails(63535540);
+  const dynamoUserDetail = await dynamoDB.getUserDetails(req.body.portalId);
   const msbClient = new MsbPrivateClient('https://ui.msbdocs.com','v1');
   msbClient.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
   msbClient.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
