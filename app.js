@@ -45,14 +45,14 @@ app.get('/auth', async(req, res) => {
   hubspotClient.setAccessToken(token.accessToken);
   const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
   // const dynamoUserDetail = await dynamoDB.getUserDetails(details.userId);
-  const updated = await dynamoDB.setUserDetails(details.userId);
+  const updated = await dynamoDB.setUserDetails(details.hubId);
   // if(!dynamoUserDetail.Item) {
   // }
-  const hubspotUserUpdateResponse = await dynamoDB.setHubspotDetails(details.userId,{...details, ...token});
+  const hubspotUserUpdateResponse = await dynamoDB.setHubspotDetails(details.hubId,{...details, ...token});
   //redirect to msb
   const msb = new URL(msbAuthUrl);
     msb.searchParams.append("redirect_uri",`${baseUri}/hubredirect`);
-    msb.searchParams.append("state", details.userId);
+    msb.searchParams.append("state", details.hubId);
     res.redirect(msb.href);
 });
 
@@ -75,23 +75,21 @@ app.get('/accounts', (req, res) => {
   res.send(accountsRespose);
 })
 
-app.post('/doctemplates', (req,res) => {
+app.post('/doctemplates', async(req,res) => {
   console.log(req.query, req.body, 'doctemplates');
-  const obj = {
-      options: [
-        {
-          label: "Template-1",
-          description: "Mumbai template",
-          value: "template-1-mumbai"
-        },
-        {
-          label: "Template-2",
-          description: "Dubai template",
-          value: "template-2-dubai"
-        }
-      ],
-  }
-  res.send(obj);
+  const dynamoUserDetail = await dynamoDB.getUserDetails(63535540);
+  const msbClient = new MsbPrivateClient('https://ui.msbdocs.com','v1');
+  msbClient.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
+  msbClient.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
+  const docTemplates = await msbClient.documentTemplates();
+  const result = docTemplates.data.data.docTemplateDTOList.docTemplateDTO.map(dt => {
+    return {
+      label: dt.templateName,
+      description: dt.signingPolicy,
+      value: dt.id
+    }
+  });
+  res.send({options: result});
 })
 
 app.get('/templates', (req, res) => {

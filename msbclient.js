@@ -49,6 +49,18 @@ export class MsbPrivateClient {
     });
   }
 
+  documentTemplates() {
+    const templateUrl = new URL(`${this.baseUrl}/documenttemplates`);
+    templateUrl.searchParams.append("type", "Owner");
+    return axios.get(templateUrl,{
+      headers: {
+        access_token: this.accessToken,
+        tenant_id: this.tenantId,
+        Accept: 'application/json'
+      }
+    });
+  }
+
 
 
 }
