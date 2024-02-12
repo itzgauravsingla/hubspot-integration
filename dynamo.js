@@ -46,12 +46,12 @@ export class DynamoDB {
             refresh_token: msb.refresh_token,
             scope: msb.scope,
             token_type: msb.token_type,
-            defaultTenantUuid: msb.userInfo?.defaultTenantUuid,
-            role: msb.userInfo.role,
-            email: msb.userInfo.email,
-            firstName: msb.userInfo.firstName,
-            lastName:  msb.userInfo.lastName,
-            id:  msb.userInfo.id,
+            defaultTenantUuid: msb.userInfo?.defaultTenantUuid || msb.defaultTenantUuid,
+            role: msb.userInfo?.role || msb.role,
+            email: msb?.userInfo?.email || msb.email,
+            firstName: msb?.userInfo?.firstName || msb.firstName,
+            lastName:  msb.userInfo?.lastName || msb.lastName,
+            id:  msb.userInfo?.id || msb.id,
         }
       }
     })

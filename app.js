@@ -78,7 +78,15 @@ app.post('/doctemplates', async(req,res) => {
   const msbClient = new MsbPrivateClient('https://ui.msbdocs.com','v1');
   msbClient.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
   msbClient.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
-  const docTemplates = await msbClient.documentTemplates();
+  let docTemplates = await msbClient.documentTemplates();
+  let newToken;
+  if(docTemplates.data.code == -5) {
+    newToken = await msbPublicClient.regenerateToken(MSB.CLIENT_ID,MSB.CLIENT_SECRET,dynamoUserDetail.Item.msb.refresh_token);
+    const newMsb = {...dynamoUserDetail.Item.msb, ...newToken.data};
+    const msbUserUpdateResponse = await dynamoDB.setMsbDetails(parseInt(req.body.portalId), newMsb);
+    msbClient.setAccessToken(newToken.data.msb_token);
+    docTemplates = await msbClient.documentTemplates();
+  }
   const result = docTemplates.data.data.docTemplateDTOList.docTemplateDTO.map(dt => {
     return {
       label: dt.templateName,

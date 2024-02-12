@@ -19,6 +19,16 @@ export class MsbPublicClient {
     return axios.post(authUrl);
   }
 
+  regenerateToken(client_id, client_secret,refresh_token) {
+    const grant_type = 'refresh_token';
+    const authUrl = new URL(`${this.baseUrl}/access_token`);
+    authUrl.searchParams.append("client_id", client_id);
+    authUrl.searchParams.append("client_secret", client_secret);
+    authUrl.searchParams.append("grant_type", grant_type);
+    authUrl.searchParams.append("refresh_token", refresh_token);
+    return axios.get(authUrl);
+  }
+
 }
 
 export class MsbPrivateClient {
