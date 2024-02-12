@@ -81,7 +81,7 @@ export class MsbPrivateClient {
               docName: `${crm.object.objectType}_${crm.object.objectId}.pdf`,
               signer_info: [
                 {
-                  email: "shailesh.rai.1260@gmail.com",
+                  email: crm.fields.email,
                   tagLocationData: [
                     {
                       pageNumber: "1",
