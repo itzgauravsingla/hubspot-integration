@@ -169,7 +169,7 @@ app.post('/trigger', async(req, res) => {
   console.log(req.query, 'trigger');
   console.log(req.body, 'trigger body');
   const easyCompose = new MsbPrivateClient('https://ui.msbdocs.com','v3');
-  const dynamoUserDetail = await dynamoDB.getUserDetails(req.body.portalId);
+  const dynamoUserDetail = await dynamoDB.getUserDetails(req.body.origin.portalId);
   easyCompose.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
   easyCompose.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
   easyCompose.compose();
