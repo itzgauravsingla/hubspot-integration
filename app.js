@@ -44,10 +44,7 @@ app.get('/auth', async(req, res) => {
   );
   hubspotClient.setAccessToken(token.accessToken);
   const details = await hubspotClient.oauth.accessTokensApi.get(token.accessToken);
-  // const dynamoUserDetail = await dynamoDB.getUserDetails(details.userId);
   const updated = await dynamoDB.setUserDetails(details.hubId);
-  // if(!dynamoUserDetail.Item) {
-  // }
   const hubspotUserUpdateResponse = await dynamoDB.setHubspotDetails(details.hubId,{...details, ...token});
   //redirect to msb
   const msb = new URL(msbAuthUrl);
@@ -168,9 +165,14 @@ app.get('/cards', (req,res) => {
   res.send(cardRes);
 });
 
-app.post('/trigger', (req, res) => {
+app.post('/trigger', async(req, res) => {
   console.log(req.query, 'trigger');
   console.log(req.body, 'trigger body');
+  const easyCompose = new MsbPrivateClient('https://ui.msbdocs.com','v3');
+  const dynamoUserDetail = await dynamoDB.getUserDetails(req.body.portalId);
+  easyCompose.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
+  easyCompose.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
+  easyCompose.compose();
   res.send();
 })
 

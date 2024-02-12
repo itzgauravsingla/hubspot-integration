@@ -1,5 +1,6 @@
 import url from 'url';
 import axios from 'axios';
+import { encodedPdf } from './pdfData';
 
 export class MsbPublicClient {
   appPrefix = '/mysignaturebook';
@@ -59,6 +60,52 @@ export class MsbPrivateClient {
         Accept: 'application/json'
       }
     });
+  }
+
+  compose() {
+    const composeUrl =  new URL(`${this.baseUrl}/compose/epak`);
+    const data = {
+      documentList: [
+        {
+          docName: "basic.pdf",
+          base64EncodedData: encodedPdf
+        }
+      ],
+      workflowData: [
+        {
+          wfStateOrder: 1,
+          action: "SIGN",
+          signingPolicy: "QUICKSIGN",
+          docTagsData: [
+            {
+              docName: "basic.pdf",
+              signer_info: [
+                {
+                  email: "shailesh.rai.1260@gmail.com",
+                  tagLocationData: [
+                    {
+                      pageNumber: "1",
+                      x: "300",
+                      y: "30",
+                      height: "7.1",
+                      width: "130.9"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      useAutoAppend: false
+    }
+    return axios.post(composeUrl,data, {
+      headers: {
+        access_token: this.accessToken,
+        tenant_id: this.tenantId,
+        Accept: 'application/json'
+      }
+    })
   }
 
 
