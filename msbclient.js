@@ -62,12 +62,12 @@ export class MsbPrivateClient {
     });
   }
 
-  compose() {
+  compose(crm) {
     const composeUrl =  new URL(`${this.baseUrl}/compose/epak`);
     const data = {
       documentList: [
         {
-          docName: "basic.pdf",
+          docName: `${crm.object.objectType}_${crm.object.objectId}.pdf`,
           base64EncodedData: encodedPdf
         }
       ],
@@ -78,7 +78,7 @@ export class MsbPrivateClient {
           signingPolicy: "QUICKSIGN",
           docTagsData: [
             {
-              docName: "basic.pdf",
+              docName: `${crm.object.objectType}_${crm.object.objectId}.pdf`,
               signer_info: [
                 {
                   email: "shailesh.rai.1260@gmail.com",

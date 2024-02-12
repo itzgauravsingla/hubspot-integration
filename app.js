@@ -172,7 +172,7 @@ app.post('/trigger', async(req, res) => {
   const dynamoUserDetail = await dynamoDB.getUserDetails(req.body.origin.portalId);
   easyCompose.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
   easyCompose.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
-  easyCompose.compose();
+  easyCompose.compose(req.body);
   res.send();
 })
 
