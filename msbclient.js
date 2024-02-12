@@ -78,7 +78,7 @@ export class MsbPrivateClient {
           signingPolicy: "QUICKSIGN",
           docTagsData: [
             {
-              docName: `${crm.object.objectType}_${crm.object.objectId}`,
+              docName: `${crm.object.objectType}_${crm.object.objectId}.pdf`,
               signer_info: [
                 {
                   email: crm.fields.email,

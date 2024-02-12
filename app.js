@@ -173,6 +173,7 @@ app.post('/trigger', async(req, res) => {
   easyCompose.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
   easyCompose.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
   const ePak = await easyCompose.compose(req.body);
+  console.log("ePak",ePak);
   res.send();
 })
 
