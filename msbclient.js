@@ -1,6 +1,6 @@
 import url from 'url';
 import axios from 'axios';
-import { encodedPdf } from './pdfData';
+import { encodedPdf } from './pdfData.js';
 
 export class MsbPublicClient {
   appPrefix = '/mysignaturebook';
