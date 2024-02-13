@@ -135,7 +135,7 @@ app.get('/cards', async(req,res) => {
     msbClient.setAccessToken(newToken.data.msb_token);
     epaks = await  msbClient.epaks(req.query);
   }
-  const cardResponse = epaks.data.data.map(epak => {
+  const cardResponse = epaks.data.data && epaks.data.data.map(epak => {
     const epakUrl = new URL('https://ui.msbdocs.com/mysignaturebook/app/dashboard');
     epakUrl.searchParams.append("ePakId",epak.ePakId);
     return {
@@ -163,7 +163,7 @@ app.get('/cards', async(req,res) => {
   });
 
   const cardRes = {
-    results: cardResponse,
+    results: cardResponse || [],
     primaryAction: {
       type: "IFRAME",
       width: 890,
