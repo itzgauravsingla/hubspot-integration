@@ -3,6 +3,12 @@ import express from "express";
 import bodyParser from 'body-parser';
 import { MsbPrivateClient, MsbPublicClient } from './msbclient.js';
 import { DynamoDB } from './dynamo.js';
+Object.defineProperty(BigInt.prototype, "toJSON", {
+  get() {
+      "use strict";
+      return () => String(this);
+  }
+});
 
 const app = express();
 const PORT = 3000;
@@ -139,7 +145,7 @@ app.get('/cards', async(req,res) => {
     const epakUrl = new URL('https://ui.msbdocs.com/mysignaturebook/app/dashboard');
     epakUrl.searchParams.append("ePakId",epak.ePakId);
     return {
-      objectId: epak.ePakId,
+      objectId: BigInt("0x" + epak.ePakId .replace(/-/g, "")),
       title: epak.subject,
       link: epakUrl,
       properties: [
