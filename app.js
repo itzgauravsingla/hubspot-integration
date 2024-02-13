@@ -120,48 +120,50 @@ app.get('/templates', (req, res) => {
   res.send(templatesResponse);
 })
 
-app.get('/cards', (req,res) => {
+app.get('/cards', async(req,res) => {
   console.log(req.query, 'cards');
+  const dynamoUserDetail = await dynamoDB.getUserDetails(parseInt(req.query.portalId));
+  const msbClient = new MsbPrivateClient('https://ui.msbdocs.com','v2');
+  msbClient.setAccessToken(dynamoUserDetail.Item.msb.msb_token);
+  msbClient.setTenantId(dynamoUserDetail.Item.msb.defaultTenantUuid);
+  let epaks = await msbClient.epaks(req.query);
+  let newToken;
+  if(epaks.data.code == -5) {
+    newToken = await msbPublicClient.regenerateToken(MSB.CLIENT_ID,MSB.CLIENT_SECRET,dynamoUserDetail.Item.msb.refresh_token);
+    const newMsb = {...dynamoUserDetail.Item.msb, ...newToken.data};
+    const msbUserUpdateResponse = await dynamoDB.setMsbDetails(parseInt(req.query.portalId), newMsb);
+    msbClient.setAccessToken(newToken.data.msb_token);
+    epaks = await  msbClient.epaks(req.query);
+  }
+  const cardResponse = epaks.data.data.map(epak => {
+    const epakUrl = new URL('https://ui.msbdocs.com/mysignaturebook/app/dashboard');
+    epakUrl.searchParams.append("ePakId",epak.ePakId);
+    return {
+      objectId: epak.ePakId,
+      title: epak.subject,
+      link: epakUrl,
+      properties: [
+        {
+          label: "Custodian",
+          dataType: "EMAIL",
+          value: epak.ownerUserName
+        },
+        {
+          label: "Signer",
+          dataType: "STRING",
+          value: epak.signerUserName || epak.currentStatePendingSigners[0]
+        },
+        {
+          label: "ePak Status",
+          dataType: "STRING",
+          value: epak.status
+        }
+      ]
+    }
+  });
+
   const cardRes = {
-    results: [
-      {
-        objectId: 988,
-        title: "API-54: Question about bulk APIs",
-        link: "http://example.com/2",
-        created: "2016-08-04",
-        priority: "HIGH",
-        project: "API",
-        reported_by: "ksmith@hubspot.com",
-        description: "Customer is not able to find documentation about our bulk Contacts APIs.",
-        reporter_type: "Support Rep",
-        status: "Resolved",
-        ticket_type: "Bug",
-        updated: "2016-09-23",
-        properties: [
-          {
-            label: "Resolved by",
-            dataType: "EMAIL",
-            value: "ijones@hubspot.com"
-          },
-          {
-            label: "Resolution type",
-            dataType: "STRING",
-            value: "Referred to documentation"
-          },
-          {
-            label: "Resolution impact",
-            dataType: "CURRENCY",
-            value: "94.34",
-            currencyCode: "GBP"
-          }
-        ]
-      }
-      // {
-      //   objectId: 245,
-      //   title: "Create an ePak",
-      //   // link: "http://esign-ui.msbdocs.com"
-      // }
-    ],
+    results: cardResponse,
     primaryAction: {
       type: "IFRAME",
       width: 890,
@@ -227,6 +229,46 @@ app.listen(PORT, (error) => {
     console.log('error occured can\'t start', error);
   }
 })
+
+  // [
+  //   {
+  //     objectId: 988,
+  //     title: "API-54: Question about bulk APIs",
+  //     link: "http://example.com/2",
+  //     created: "2016-08-04",
+  //     priority: "HIGH",
+  //     project: "API",
+  //     reported_by: "ksmith@hubspot.com",
+  //     description: "Customer is not able to find documentation about our bulk Contacts APIs.",
+  //     reporter_type: "Support Rep",
+  //     status: "Resolved",
+  //     ticket_type: "Bug",
+  //     updated: "2016-09-23",
+  //     properties: [
+  //       {
+  //         label: "Resolved by",
+  //         dataType: "EMAIL",
+  //         value: "ijones@hubspot.com"
+  //       },
+  //       {
+  //         label: "Resolution type",
+  //         dataType: "STRING",
+  //         value: "Referred to documentation"
+  //       },
+  //       {
+  //         label: "Resolution impact",
+  //         dataType: "CURRENCY",
+  //         value: "94.34",
+  //         currencyCode: "GBP"
+  //       }
+  //     ]
+  //   }
+  //   // {
+  //   //   objectId: 245,
+  //   //   title: "Create an ePak",
+  //   //   // link: "http://esign-ui.msbdocs.com"
+  //   // }
+  // ],
 
 
 

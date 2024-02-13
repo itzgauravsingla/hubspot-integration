@@ -118,6 +118,23 @@ export class MsbPrivateClient {
     })
   }
 
+  epaks(crm) {
+    const epaksUrl = new URL(`${this.baseUrl}/epaks`);
+    epaksUrl.searchParams.append('pg',1);
+    epaksUrl.searchParams.append('role','Custodian');
+    epaksUrl.searchParams.append('sort','DESC');
+    epaksUrl.searchParams.append('sortColumn', 'modifiedOn');
+    epaksUrl.searchParams.append('filter',`${crm.associatedObjectType}_${crm.associatedObjectId}`);
+    epaksUrl.searchParams.append('filterKey','SUBJECT');
+    return axios.get(epaksUrl,{
+      headers: {
+        access_token: this.accessToken,
+        tenant_id: this.tenantId,
+        Accept: 'application/json'
+      }
+    });
+  }
+
 
 
 }
