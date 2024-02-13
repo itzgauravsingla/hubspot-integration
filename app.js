@@ -137,7 +137,8 @@ app.get('/cards', async(req,res) => {
   }
   const cardResponse = epaks.data.data && epaks.data.data.map(epak => {
     const epakUrl = new URL('https://ui.msbdocs.com/mysignaturebook/app/dashboard');
-    epakUrl.searchParams.append("ePakId",epak.ePakId);
+    epakUrl.searchParams.append("view", "new");
+    epakUrl.searchParams.append("ePakId", epak.ePakId);
     return {
       objectId: Math.floor(Math.random()*90000) + 10000,
       title: epak.subject,
